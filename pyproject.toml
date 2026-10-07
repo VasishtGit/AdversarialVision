@@ -1,0 +1,33 @@
+[project]
+name = "adversarialvision"
+version = "0.1.0"
+description = "Vision Model Robustness Evaluation & Defense Framework"
+readme = "README.md"
+authors = [
+    { name = "Vasisht Suresh", email = "vasisht765@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "torch",
+    "torchvision",
+    "opencv-python-headless",
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "matplotlib",
+    "tqdm",
+    "pyyaml",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
+
+[build-system]
+requires = ["uv_build>=0.12.10,<0.13.0"]
+build-backend = "uv_build"
