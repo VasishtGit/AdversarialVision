@@ -1,0 +1,26 @@
+defense,condition,accuracy,num_samples
+None (No Defense),Clean,76.3671875,1024
+None (No Defense),Salt & Pepper (Sev 3),4.39453125,1024
+None (No Defense),Gaussian Noise (Sev 3),8.30078125,1024
+None (No Defense),FGSM (eps=8/255),7.8125,1024
+None (No Defense),PGD-10 (eps=8/255),0.0,1024
+"Gaussian Blur (k=3, s=0.5)",Clean,71.19140625,1024
+"Gaussian Blur (k=3, s=0.5)",Salt & Pepper (Sev 3),8.3984375,1024
+"Gaussian Blur (k=3, s=0.5)",Gaussian Noise (Sev 3),12.79296875,1024
+"Gaussian Blur (k=3, s=0.5)",FGSM (eps=8/255),11.328125,1024
+"Gaussian Blur (k=3, s=0.5)",PGD-10 (eps=8/255),0.390625,1024
+Median Filter (k=3),Clean,54.78515625,1024
+Median Filter (k=3),Salt & Pepper (Sev 3),49.70703125,1024
+Median Filter (k=3),Gaussian Noise (Sev 3),15.4296875,1024
+Median Filter (k=3),FGSM (eps=8/255),20.41015625,1024
+Median Filter (k=3),PGD-10 (eps=8/255),25.1953125,1024
+Bilateral Filter (d=3),Clean,73.2421875,1024
+Bilateral Filter (d=3),Salt & Pepper (Sev 3),4.39453125,1024
+Bilateral Filter (d=3),Gaussian Noise (Sev 3),8.88671875,1024
+Bilateral Filter (d=3),FGSM (eps=8/255),11.62109375,1024
+Bilateral Filter (d=3),PGD-10 (eps=8/255),2.83203125,1024
+JPEG Compression (Q=75),Clean,59.86328125,1024
+JPEG Compression (Q=75),Salt & Pepper (Sev 3),4.4921875,1024
+JPEG Compression (Q=75),Gaussian Noise (Sev 3),7.91015625,1024
+JPEG Compression (Q=75),FGSM (eps=8/255),18.9453125,1024
+JPEG Compression (Q=75),PGD-10 (eps=8/255),29.00390625,1024

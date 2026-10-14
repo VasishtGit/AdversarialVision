@@ -1,9 +1,10 @@
-# Datasets (cifar-100 is downloaded automatically by PyTorch)
+# Datasets (CIFAR-100 is downloaded automatically by PyTorch)
 data/cifar-100-python*
 data/*.tar.gz
 data/*.zip
+*.tar.gz
 
-# Model checkpoints (large binary weights)
+# Model checkpoints (weights exceeding GitHub 50MB/100MB thresholds)
 models/checkpoints/*.pth
 models/checkpoints/*.pt
 *.pth
@@ -12,7 +13,7 @@ models/checkpoints/*.pt
 # Temporary files
 *.tmp
 chunk.tmp
-file.txt~
+*~
 
 # Python-generated files
 __pycache__/

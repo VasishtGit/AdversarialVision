@@ -11,6 +11,8 @@ from models.resnet_cifar import resnet18_cifar
 from evaluation.clean import evaluate_clean, save_baseline_results
 from evaluation.corruptions import run_natural_corruption_benchmark
 from evaluation.attacks import run_adversarial_benchmark
+from evaluation.defenses import run_defense_benchmark
+from frequency.spectral_analysis import run_frequency_benchmark
 from visualization.plots import plot_confusion_matrix, plot_class_accuracy
 
 
@@ -24,8 +26,8 @@ def parse_args():
         "--benchmark",
         type=str,
         default="clean",
-        choices=["clean", "corruptions", "attacks", "all"],
-        help="Benchmark mode: 'clean', 'corruptions' (Phase 9), 'attacks' (Milestone 3 FGSM/PGD), or 'all'",
+        choices=["clean", "corruptions", "attacks", "frequency", "defenses", "all"],
+        help="Benchmark mode: 'clean', 'corruptions', 'attacks', 'frequency', 'defenses', or 'all'",
     )
     return parser.parse_args()
 
@@ -121,6 +123,33 @@ def main():
             amp_enabled=True,
         )
         print("\nAdversarial Attacks benchmark complete! Results saved to experiments/")
+
+    # 6. Milestone 4: Frequency Domain Spectral Benchmark (2D FFT & DCT)
+    if args.benchmark in ["frequency", "all"]:
+        print("\nStarting Milestone 4 Frequency Domain Benchmark...")
+        run_frequency_benchmark(
+            model=model,
+            loader=test_loader,
+            device=device,
+            num_eval_samples=500,
+            output_csv="experiments/frequency_analysis_summary.csv",
+            plot_path="experiments/frequency_spectrum_analysis.png",
+        )
+        print("\nFrequency domain analysis complete! Results saved to experiments/")
+
+    # 7. Milestone 5: Preprocessing Defenses Benchmark
+    if args.benchmark in ["defenses", "all"]:
+        print("\nStarting Milestone 5 Preprocessing Defenses Benchmark...")
+        run_defense_benchmark(
+            model=model,
+            loader=test_loader,
+            device=device,
+            num_eval_samples=1000,
+            output_csv="experiments/defense_mitigation_results.csv",
+            plot_path="experiments/defense_mitigation_benchmark.png",
+            amp_enabled=True,
+        )
+        print("\nPreprocessing Defenses benchmark complete! Results saved to experiments/")
 
 
 if __name__ == "__main__":
