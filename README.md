@@ -62,17 +62,17 @@ Evaluated across 10 corruptions and 5 severity levels on the untouched 10,000-im
 
 | Corruption Type | Mean Accuracy (Severities 1–5) | Severity 5 Worst Accuracy | Retention vs Clean ($77.84\%$) | Vulnerability Tier |
 | :--- | :---: | :---: | :---: | :---: |
-| **Salt & Pepper Noise** | $21.59\%$ | **$1.64\%$** | $2.1\%$ | 🔴 Extreme Vulnerability |
-| **Gaussian Noise** | $25.47\%$ | **$2.22\%$** | $2.9\%$ | 🔴 Extreme Vulnerability |
-| **Downsampling** | $30.51\%$ | **$5.10\%$** | $6.6\%$ | 🔴 High Vulnerability |
-| **Gaussian Blur** | $35.86\%$ | **$4.37\%$** | $5.6\%$ | 🟠 High Vulnerability |
-| **Motion Blur** | $35.94\%$ | **$9.05\%$** | $11.6\%$ | 🟠 High Vulnerability |
-| **JPEG Compression** | $45.84\%$ | **$14.99\%$** | $19.3\%$ | 🟡 Moderate Degradation |
-| **Contrast Shift** | $56.28\%$ | **$12.04\%$** | $15.5\%$ | 🟡 Moderate Degradation |
-| **Gamma Adjustment** | $66.76\%$ | **$47.98\%$** | $61.6\%$ | 🟢 Low Degradation |
-| **Rotation** | $67.63\%$ | **$51.46\%$** | $66.1\%$ | 🟢 Low Degradation |
-| **Brightness Shift** | $68.77\%$ | **$49.35\%$** | $63.4\%$ | 🟢 Low Degradation |
-| **Perspective Distortion** | **$71.58\%$** | **$66.44\%$** | **$85.4\%$** | 🟢 Most Robust |
+| **Salt & Pepper Noise** | $21.59\%$ | **$1.64\%$** | $2.1\%$ | Extreme Vulnerability |
+| **Gaussian Noise** | $25.47\%$ | **$2.22\%$** | $2.9\%$ | Extreme Vulnerability |
+| **Downsampling** | $30.51\%$ | **$5.10\%$** | $6.6\%$ | High Vulnerability |
+| **Gaussian Blur** | $35.86\%$ | **$4.37\%$** | $5.6\%$ | High Vulnerability |
+| **Motion Blur** | $35.94\%$ | **$9.05\%$** | $11.6\%$ |  High Vulnerability |
+| **JPEG Compression** | $45.84\%$ | **$14.99\%$** | $19.3\%$ | Moderate Degradation |
+| **Contrast Shift** | $56.28\%$ | **$12.04\%$** | $15.5\%$ | Moderate Degradation |
+| **Gamma Adjustment** | $66.76\%$ | **$47.98\%$** | $61.6\%$ | Low Degradation |
+| **Rotation** | $67.63\%$ | **$51.46\%$** | $66.1\%$ |  Low Degradation |
+| **Brightness Shift** | $68.77\%$ | **$49.35\%$** | $63.4\%$ |  Low Degradation |
+| **Perspective Distortion** | **$71.58\%$** | **$66.44\%$** | **$85.4\%$** |  Most Robust |
 
 ![Natural Corruption Degradation Curves](experiments/natural_corruption_curves.png)
 ![Natural Corruption Vulnerability Ranking](experiments/natural_corruption_ranking.png)
