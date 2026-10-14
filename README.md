@@ -4,7 +4,6 @@ An empirical, modular research framework evaluating deep vision model robustness
 
 ![Python](https://img.shields.io/badge/python-3.11-blue.svg)
 ![PyTorch](https://img.shields.io/badge/pytorch-2.11%2Bcu128-orange.svg)
-![CUDA](https://img.shields.io/badge/cuda-RTX%203050%20Laptop-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)
 
 ---
