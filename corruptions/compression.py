@@ -16,8 +16,12 @@ def jpeg_compression(x: np.ndarray, severity: int = 1) -> np.ndarray:
     img_uint8 = np.clip(x * 255.0, 0, 255).astype(np.uint8)
     encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
 
-    _, encimg = cv2.imencode(".jpg", img_uint8, encode_param)
-    decimg = cv2.imdecode(encimg, 1)
+    # Convert RGB input to BGR before passing to OpenCV encoder
+    img_bgr = cv2.cvtColor(img_uint8, cv2.COLOR_RGB2BGR)
+    _, encimg = cv2.imencode(".jpg", img_bgr, encode_param)
+    decimg = cv2.imdecode(encimg, cv2.IMREAD_COLOR)
+    # Convert OpenCV BGR back to standard RGB
+    decimg = cv2.cvtColor(decimg, cv2.COLOR_BGR2RGB)
 
     return (decimg / 255.0).astype(np.float32)
 

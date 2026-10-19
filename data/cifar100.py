@@ -131,6 +131,31 @@ def get_cifar100_loaders(
     return train_loader, val_loader, test_loader
 
 
+def get_cifar100_test_loader(
+    data_dir: str = "./data",
+    batch_size: int = 256,
+    num_workers: int = 2,
+    pin_memory: bool = True,
+    download: bool = True,
+    normalize_in_transform: bool = False,
+) -> DataLoader:
+    """Convenience helper to load only the CIFAR-100 test dataset without allocating train/val loaders."""
+    _, eval_transform = get_cifar100_transforms(normalize_in_transform=normalize_in_transform)
+    raw_test_dataset = datasets.CIFAR100(
+        root=data_dir,
+        train=False,
+        download=download,
+        transform=eval_transform,
+    )
+    return DataLoader(
+        raw_test_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+    )
+
+
 if __name__ == "__main__":
     print("Testing CIFAR-100 pipeline...")
     tr_loader, v_loader, te_loader = get_cifar100_loaders(data_dir="./data")

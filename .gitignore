@@ -24,4 +24,7 @@ wheels/
 *.egg-info
 
 # Virtual environments
-.venv
+.venv/
+
+# Testing and caches
+.pytest_cache/

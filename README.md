@@ -132,41 +132,69 @@ Evaluating 5 defense filtering techniques against clean images, high-frequency n
 
 ---
 
-## Project Structure
+### Project Structure
 
 ```text
 AdversarialVision/
 ├── configs/
-│   └── baseline.yaml              # Hyperparameters for training & evaluation
+│   └── baseline.yaml              # Hyperparameters for standard & adversarial training, evaluations
 ├── data/
-│   └── cifar100.py                # Deterministic train/val/test splits in [0.0, 1.0]
+│   ├── cifar100.py                # Deterministic CIFAR-100 loaders and test loader helper
+│   ├── cifar10.py                 # Multi-dataset support for CIFAR-10 benchmarking
+│   └── __init__.py
 ├── models/
-│   └── resnet_cifar.py            # CIFAR-100 ResNet-18 with differentiable NormalizeLayer
+│   ├── resnet_cifar.py            # CIFAR ResNet-18 with differentiable NormalizeLayer
+│   ├── wideresnet.py              # WideResNet-28-10 / WideResNet-34-10 architecture
+│   └── __init__.py                # MODEL_REGISTRY and build_model helper
 ├── attacks/
 │   ├── fgsm.py                    # Fast Gradient Sign Method
-│   └── pgd.py                     # Projected Gradient Descent (L_inf ball projection)
+│   ├── pgd.py                     # Projected Gradient Descent (L_inf ball projection)
+│   ├── autoattack_runner.py       # AutoAttack ensemble evaluation runner
+│   └── __init__.py
+├── trainers/                      # Pluggable training methodology package
+│   ├── base.py                    # BaseTrainer abstract class
+│   ├── standard.py                # Clean Empirical Risk Minimization (ERM)
+│   ├── pgd_at.py                  # PGD Adversarial Training (Madry et al.)
+│   ├── fast_fgsm.py               # Fast-FGSM with Random Start (Wong et al.)
+│   ├── trades.py                  # TRADES Defense (Zhang et al.)
+│   └── __init__.py                # TRAINING_REGISTRY
+├── defenses/
+│   ├── preprocessing.py           # Gaussian, Median, Bilateral & JPEG defenses
+│   ├── certified.py               # Randomized Smoothing (certified L2 radius)
+│   ├── detection.py               # Energy-based detector & LID scoring
+│   └── __init__.py                # DEFENSES_REGISTRY & CompositeDefense
 ├── corruptions/
-│   ├── blur.py                    # Gaussian & Motion blur
-│   ├── noise.py                   # Gaussian & Salt-and-Pepper noise
-│   ├── compression.py             # JPEG compression & Downsampling
+│   ├── blur.py                    # Gaussian & Motion blur (with true random angle)
+│   ├── noise.py                   # Gaussian & Salt-and-Pepper noise (per-pixel)
+│   ├── compression.py             # JPEG compression (RGB-safe) & Downsampling
 │   ├── lighting.py                # Brightness, Contrast & Gamma adjustment
-│   └── geometric.py               # Rotation & Perspective distortion
+│   ├── geometric.py               # Rotation & Perspective distortion
+│   └── __init__.py                # corrupt() dispatcher
 ├── frequency/
 │   ├── fft.py                     # 2D Fast Fourier Transform & radial profiles
 │   ├── dct.py                     # 2D Discrete Cosine Transform features
-│   └── spectral_analysis.py       # Comprehensive spectral benchmarking runner
-├── defenses/
-│   └── preprocessing.py           # Gaussian, Median, Bilateral & JPEG defenses
+│   ├── spectral_analysis.py       # Comprehensive spectral benchmarking runner
+│   ├── hypothesis_test.py         # Isolated delta PSD & Fourier filtering probe
+│   └── __init__.py
 ├── evaluation/
 │   ├── clean.py                   # Clean baseline inference & confusion matrix
 │   ├── corruptions.py             # Phase 9 natural corruption benchmark runner
 │   ├── attacks.py                 # Milestone 3 adversarial benchmark runner
 │   ├── defenses.py                # Milestone 5 preprocessing defense runner
-│   └── metrics.py                 # Confidence, entropy, and norm computations
+│   ├── transfer.py                # Transfer attack evaluation runner
+│   ├── metrics.py                 # Confidence, entropy, and norm computations
+│   └── __init__.py
 ├── visualization/
-│   └── plots.py                   # Matplotlib suite for all publication-quality figures
-├── experiments/                   # Generated evaluation CSVs, JSONs, and PNG figures
-├── train.py                       # Training entrypoint with AMP & Cosine Annealing
+│   ├── plots.py                   # Matplotlib suite for publication-quality figures
+│   └── __init__.py
+├── tests/                         # Pytest automated test suite
+│   ├── test_attacks.py            # Attack perturbation bound checks
+│   ├── test_corruptions.py        # Corruption shapes and [0, 1] range tests
+│   └── test_channels.py           # RGB/BGR color preservation tests
+├── scripts/
+│   └── generate_model_card.py     # Automated markdown model card generator
+├── experiments/                   # Generated evaluation CSVs, JSONs, PNG figures, MODEL_CARD.md
+├── train.py                       # Unified training CLI (--method standard|pgd|fast_fgsm|trades)
 └── evaluate.py                    # Unified CLI evaluation entrypoint
 ```
 
@@ -175,13 +203,13 @@ AdversarialVision/
 ## Installation & Setup
 
 Requirements:
-- Python 3.10+
-- NVIDIA GPU with CUDA support (tested on RTX 3050 6GB Laptop GPU)
+- Python 3.11+
+- NVIDIA GPU with CUDA support (or CPU mode for testing)
 
 ```powershell
 # Clone the repository
-git clone https://github.com/VasishtGit/AdversialVision.git
-cd AdversialVision
+git clone https://github.com/VasishtGit/AdversarialVision.git
+cd AdversarialVision
 
 # Create and activate virtual environment using uv or standard venv
 uv venv
@@ -189,7 +217,7 @@ uv venv
 
 # Install dependencies with CUDA-enabled PyTorch
 uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
-uv pip install numpy opencv-python matplotlib pandas pyyaml tqdm
+uv pip install numpy opencv-python-headless matplotlib pandas pyyaml tqdm scikit-learn scipy pytest
 ```
 
 ---

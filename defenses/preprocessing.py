@@ -22,9 +22,9 @@ def def_median_filter(x: np.ndarray, ksize: int = 3) -> np.ndarray:
 def def_bilateral_filter(x: np.ndarray, d: int = 3, sigma_color: float = 0.1, sigma_space: float = 3.0) -> np.ndarray:
     """Bilateral filter (edge-preserving smoothing)."""
     img_u8 = np.clip(x * 255.0, 0, 255).astype(np.uint8)
-    # sigma_color in [0, 255]
-    sc = int(sigma_color * 255.0)
-    filtered = cv2.bilateralFilter(img_u8, d=d, sigmaColor=sc, sigmaSpace=sigma_space)
+    # sigma_color in [0, 255] as float
+    sc = float(sigma_color * 255.0)
+    filtered = cv2.bilateralFilter(img_u8, d=d, sigmaColor=sc, sigmaSpace=float(sigma_space))
     return (filtered / 255.0).astype(np.float32)
 
 
@@ -32,8 +32,10 @@ def def_jpeg_recompression(x: np.ndarray, quality: int = 75) -> np.ndarray:
     """JPEG recompression defense (removes high-frequency adversarial perturbations)."""
     img_u8 = np.clip(x * 255.0, 0, 255).astype(np.uint8)
     encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
-    _, enc = cv2.imencode(".jpg", img_u8, encode_param)
-    dec = cv2.imdecode(enc, 1)
+    img_bgr = cv2.cvtColor(img_u8, cv2.COLOR_RGB2BGR)
+    _, enc = cv2.imencode(".jpg", img_bgr, encode_param)
+    dec = cv2.imdecode(enc, cv2.IMREAD_COLOR)
+    dec = cv2.cvtColor(dec, cv2.COLOR_BGR2RGB)
     return (dec / 255.0).astype(np.float32)
 
 

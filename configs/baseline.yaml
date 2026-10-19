@@ -44,3 +44,26 @@ training:
 evaluation:
   batch_size: 256
   metrics: ["accuracy", "top5_accuracy", "loss", "mean_confidence", "latency"]
+  attacks:
+    epsilons: [0.00392156862, 0.00784313725, 0.0156862745, 0.031372549, 0.062745098, 0.125490196]
+    pgd_steps: 10
+  defenses:
+    num_samples: 1000
+    threat_eps: 0.031372549
+  corruptions:
+    severities: [1, 2, 3, 4, 5]
+
+adversarial_training:
+  method: "pgd"            # pgd | fast_fgsm | trades
+  epochs: 50
+  batch_size: 128
+  eval_batch_size: 256
+  lr: 0.05
+  eps: 0.031372549        # 8.0 / 255.0
+  alpha: 0.007843137      # 2.0 / 255.0
+  steps: 7
+  trades_beta: 6.0
+  checkpoint:
+    save_dir: "models/checkpoints"
+    save_name: "resnet18_cifar100_adv_trained.pth"
+

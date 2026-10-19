@@ -41,6 +41,7 @@ class PGDAttack:
 
         for _ in range(self.steps):
             x_adv.requires_grad_()
+            self.model.zero_grad(set_to_none=True)
 
             outputs = self.model(x_adv)
             loss = self.criterion(outputs, y)
@@ -59,6 +60,7 @@ class PGDAttack:
             eta = torch.clamp(x_adv - x, min=-self.eps, max=self.eps)
             x_adv = torch.clamp(x + eta, min=0.0, max=1.0)
 
+        self.model.zero_grad(set_to_none=True)
         return x_adv.detach()
 
 

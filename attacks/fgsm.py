@@ -21,6 +21,7 @@ class FGSMAttack:
         """
         Generates adversarial examples for batch x with true/target labels y.
         """
+        self.model.zero_grad(set_to_none=True)
         x_adv = x.clone().detach().requires_grad_(True)
 
         outputs = self.model(x_adv)
@@ -36,6 +37,7 @@ class FGSMAttack:
         x_adv = x_adv + self.eps * torch.sign(grad)
         x_adv = torch.clamp(x_adv, 0.0, 1.0)
 
+        self.model.zero_grad(set_to_none=True)
         return x_adv.detach()
 
 

@@ -4,8 +4,8 @@
   "mean_confidence": 0.7982854247093201,
   "mean_entropy": 0.9288154244422913,
   "total_samples": 10000,
-  "inference_latency_ms_per_sample": 1.2675648499998715,
-  "total_inference_time_sec": 12.675648499998715,
+  "inference_latency_ms_per_sample": 1.2781160399999976,
+  "total_inference_time_sec": 12.781160399999976,
   "class_wise_accuracy": {
     "0": 89.0,
     "1": 92.0,

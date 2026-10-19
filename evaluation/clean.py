@@ -70,6 +70,14 @@ def evaluate_clean(
         all_confs.append(confs.cpu().numpy())
         all_entropies.append(entropies.cpu().numpy())
 
+        # Top-5 accuracy tracking
+        _, preds_top5 = logits.topk(5, 1, largest=True, sorted=True)
+        targets_expanded = targets.view(-1, 1).expand_as(preds_top5)
+        correct_top5 = preds_top5.eq(targets_expanded).any(dim=1).sum().item()
+        if "total_top5_correct" not in locals():
+            total_top5_correct = 0
+        total_top5_correct += correct_top5
+
     if device.type == "cuda":
         torch.cuda.synchronize()
     total_time = time.perf_counter() - start_time
@@ -79,9 +87,6 @@ def evaluate_clean(
     all_confs_arr = np.concatenate(all_confs)
     all_entropies_arr = np.concatenate(all_entropies)
 
-    # Convert to PyTorch tensors for top-k calc
-    all_preds_tensor = torch.from_numpy(all_preds_arr)
-    all_targets_tensor = torch.from_numpy(all_targets_arr)
     correct_top1 = (all_preds_arr == all_targets_arr).sum()
 
     # Class-wise accuracy and confusion matrix
@@ -90,6 +95,7 @@ def evaluate_clean(
 
     results = {
         "accuracy": float((correct_top1 / total_samples) * 100.0),
+        "top5_accuracy": float((total_top5_correct / total_samples) * 100.0),
         "loss": float(running_loss / total_samples),
         "mean_confidence": float(np.mean(all_confs_arr)),
         "mean_entropy": float(np.mean(all_entropies_arr)),

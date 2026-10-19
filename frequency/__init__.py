@@ -1,24 +1,21 @@
-"""Frequency analysis utilities (2D FFT and 2D DCT)."""
+"""Frequency domain analysis package.
 
-from typing import Dict, Union
-import numpy as np
-import torch
+Provides FFT and DCT spectral analysis, radial energy profiles,
+and hypothesis-driven frequency probes for vision models.
+"""
 
 from .fft import compute_fft2d, extract_fft_features
 from .dct import compute_dct2d, extract_dct_features
-
-
-def analyze_spectral_profile(image: Union[np.ndarray, torch.Tensor]) -> Dict[str, float]:
-    """Combines FFT and DCT spectral metrics into a single dictionary."""
-    fft_feats = extract_fft_features(image)
-    dct_feats = extract_dct_features(image)
-    return {**fft_feats, **dct_feats}
-
+from .spectral_analysis import compute_radial_profile, run_frequency_benchmark
+from .hypothesis_test import run_frequency_hypothesis_benchmark, fourier_filter_batch
 
 __all__ = [
     "compute_fft2d",
     "extract_fft_features",
     "compute_dct2d",
     "extract_dct_features",
-    "analyze_spectral_profile",
+    "compute_radial_profile",
+    "run_frequency_benchmark",
+    "run_frequency_hypothesis_benchmark",
+    "fourier_filter_batch",
 ]

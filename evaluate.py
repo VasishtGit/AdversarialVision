@@ -1,6 +1,7 @@
 """Evaluation entry point for baseline, corruptions, and adversarial benchmarking."""
 
 import argparse
+import json
 import yaml
 from pathlib import Path
 import numpy as np
@@ -13,6 +14,7 @@ from evaluation.corruptions import run_natural_corruption_benchmark
 from evaluation.attacks import run_adversarial_benchmark
 from evaluation.defenses import run_defense_benchmark
 from frequency.spectral_analysis import run_frequency_benchmark
+from frequency.hypothesis_test import run_frequency_hypothesis_benchmark
 from visualization.plots import plot_confusion_matrix, plot_class_accuracy
 
 
@@ -26,8 +28,8 @@ def parse_args():
         "--benchmark",
         type=str,
         default="clean",
-        choices=["clean", "corruptions", "attacks", "frequency", "defenses", "all"],
-        help="Benchmark mode: 'clean', 'corruptions', 'attacks', 'frequency', 'defenses', or 'all'",
+        choices=["clean", "corruptions", "attacks", "frequency", "frequency_probe", "defenses", "all"],
+        help="Benchmark mode: 'clean', 'corruptions', 'attacks', 'frequency', 'frequency_probe', 'defenses', or 'all'",
     )
     return parser.parse_args()
 
@@ -51,9 +53,10 @@ def main():
     print("-" * 70)
 
     # 1. Load Data
-    _, _, test_loader = get_cifar100_loaders(
+    from data.cifar100 import get_cifar100_test_loader
+    test_loader = get_cifar100_test_loader(
         data_dir=config["dataset"]["data_dir"],
-        eval_batch_size=args.batch_size,
+        batch_size=args.batch_size,
         num_workers=config["dataset"]["num_workers"],
         pin_memory=(device.type == "cuda"),
         normalize_in_transform=False,
@@ -73,14 +76,28 @@ def main():
     print(f"Loaded checkpoint from epoch {epoch} (Recorded val acc: {val_acc}%)")
 
     # 3. Clean Evaluation
-    clean_acc = 77.84
-    if args.benchmark in ["clean", "all"]:
+    baseline_json_path = Path("experiments/baseline_results.json")
+    clean_acc = None
+    baseline_metrics = None
+
+    if baseline_json_path.exists():
+        try:
+            with open(baseline_json_path, "r") as f:
+                saved_base = json.load(f)
+                clean_acc = saved_base.get("accuracy")
+                baseline_metrics = saved_base
+        except Exception:
+            pass
+
+    if args.benchmark in ["clean", "all"] or clean_acc is None:
         print("\nRunning evaluation on test set (10,000 samples)...")
         results = evaluate_clean(model, test_loader, device=device, amp_enabled=True)
         clean_acc = results["accuracy"]
+        baseline_metrics = results
 
         print("\n" + "=" * 50)
         print(f" Test Accuracy (Top-1):  {results['accuracy']:.2f}%")
+        print(f" Test Accuracy (Top-5):  {results.get('top5_accuracy', 0.0):.2f}%")
         print(f" Test Loss:              {results['loss']:.4f}")
         print(f" Mean Confidence:        {results['mean_confidence'] * 100:.2f}%")
         print(f" Mean Entropy:           {results['mean_entropy']:.4f}")
@@ -136,6 +153,20 @@ def main():
             plot_path="experiments/frequency_spectrum_analysis.png",
         )
         print("\nFrequency domain analysis complete! Results saved to experiments/")
+
+    # 6b. Hypothesis-Driven Frequency Probe (Isolated Delta & Fourier Band-Filtering)
+    if args.benchmark in ["frequency_probe", "all"]:
+        print("\nStarting Hypothesis-Driven Frequency Probe...")
+        run_frequency_hypothesis_benchmark(
+            model=model,
+            loader=test_loader,
+            device=device,
+            clean_accuracy=clean_acc,
+            num_samples=1000,
+            output_dir="experiments",
+            amp_enabled=True,
+        )
+        print("\nHypothesis-Driven Frequency Probe complete! Results saved to experiments/")
 
     # 7. Milestone 5: Preprocessing Defenses Benchmark
     if args.benchmark in ["defenses", "all"]:

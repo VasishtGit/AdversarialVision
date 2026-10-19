@@ -25,9 +25,15 @@ def motion_blur(x: np.ndarray, severity: int = 1) -> np.ndarray:
     size = sizes[severity - 1]
 
     # Generating random angle motion kernel
-    kernel = np.zeros((size, size))
-    kernel[int((size - 1) / 2), :] = np.ones(size)
-    kernel = kernel / size
+    angle = np.random.uniform(0.0, 360.0)
+    kernel = np.zeros((size, size), dtype=np.float32)
+    kernel[int((size - 1) / 2), :] = 1.0
+    # Rotate kernel
+    M = cv2.getRotationMatrix2D((size / 2.0 - 0.5, size / 2.0 - 0.5), angle, 1.0)
+    kernel = cv2.warpAffine(kernel, M, (size, size))
+    ksum = kernel.sum()
+    if ksum > 0:
+        kernel = kernel / ksum
 
     blurred = cv2.filter2D(x, -1, kernel)
     return np.clip(blurred, 0.0, 1.0).astype(np.float32)
