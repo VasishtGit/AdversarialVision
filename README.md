@@ -218,20 +218,35 @@ uv venv
 # Install dependencies with CUDA-enabled PyTorch
 uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 uv pip install numpy opencv-python-headless matplotlib pandas pyyaml tqdm scikit-learn scipy pytest
+
+# Install AdversarialVision in editable mode
+pip install -e .
 ```
 
 ---
 
 ## Reproducibility & CLI Usage
 
-### 1. Train Baseline Model from Scratch
+AdversarialVision can be executed either directly via scripts (`python train.py`, `python evaluate.py`) or as a package module (`python -m adversarialvision.train`, `python -m adversarialvision.evaluate`):
+
+### 1. Train Models with Pluggable Strategies
 ```powershell
-python train.py
+# Standard training (clean ERM)
+python -m adversarialvision.train --method standard
+
+# Adversarial Training with PGD (Madry et al.)
+python -m adversarialvision.train --method pgd_at --eps 0.03137
+
+# TRADES Defense Training (Zhang et al.)
+python -m adversarialvision.train --method trades --trades-beta 6.0
+
+# Fast-FGSM Training with Random Start (Wong et al.)
+python -m adversarialvision.train --method fast_fgsm
 ```
 
 ### 2. Run Clean Baseline Evaluation
 ```powershell
-python evaluate.py --benchmark clean
+python -m adversarialvision.evaluate --benchmark clean
 ```
 
 ### 3. Run Natural Corruptions Benchmark (50 conditions)
